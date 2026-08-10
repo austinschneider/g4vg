@@ -6,14 +6,13 @@
 //---------------------------------------------------------------------------//
 #include "SolidConverter.hh"
 
+#include <cstdlib>
+#include <random>
 #include <string_view>
 #include <typeindex>
 #include <typeinfo>
 #include <unordered_map>
 #include <vector>
-#include <cstdlib>
-#include <random>
-
 #include <G4BooleanSolid.hh>
 #include <G4Box.hh>
 #include <G4Cons.hh>
@@ -783,8 +782,8 @@ auto SolidConverter::multiunion(arg_type solid_base) -> result_type
         G4ThreeVector const trans = tr.getTranslation();
         Transformation3D const vgtr = transform_(trans, &rot);
 
-        std::string label = make_temp_name(solid.GetName(),
-                                           std::to_string(i).c_str());
+        std::string label
+            = make_temp_name(solid.GetName(), std::to_string(i).c_str());
         label += '/';
         label += daughter->GetName();
         auto* temp_lv = new LogicalVolume(label.c_str(), converted);
@@ -803,8 +802,7 @@ auto SolidConverter::multiunion(arg_type solid_base) -> result_type
                 = make_unplaced_boolean<kUnion>(placed[i], placed[i + 1]);
             std::string label = make_temp_name(
                 solid.GetName(),
-                ("u" + std::to_string(level) + "_" + std::to_string(i))
-                    .c_str());
+                ("u" + std::to_string(level) + "_" + std::to_string(i)).c_str());
             auto* temp_lv = new LogicalVolume(label.c_str(), pair_union);
             next.push_back(temp_lv->Place(&Transformation3D::kIdentity));
         }
@@ -840,9 +838,10 @@ auto SolidConverter::multiunion(arg_type solid_base) -> result_type
             n_inside += static_cast<int>(g4_in);
             n_mismatch += static_cast<int>(g4_in != vg_in);
         }
-        G4VG_LOG(info) << "MultiUnion '" << solid.GetName() << "': "
-                       << n_inside << "/" << n_total << " points inside, "
-                       << n_mismatch << " containment mismatches";
+        G4VG_LOG(info) << "MultiUnion '" << solid.GetName()
+                       << "': " << n_inside << "/" << n_total
+                       << " points inside, " << n_mismatch
+                       << " containment mismatches";
     }
     return result;
 }
